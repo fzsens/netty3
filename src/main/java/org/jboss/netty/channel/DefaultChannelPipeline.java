@@ -31,7 +31,7 @@ import java.util.concurrent.RejectedExecutionException;
  * to use {@link Channels#pipeline()} to create a new {@link ChannelPipeline}
  * instance rather than calling the constructor directly.
  *
- * 在此处使用双向链表实现Filter中FilterChain的功能
+ * filter/intercepting 模式
  */
 public class DefaultChannelPipeline implements ChannelPipeline {
 
@@ -547,6 +547,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return buf.toString();
     }
 
+    /**
+      开始处理client的请求
+     */
     public void sendUpstream(ChannelEvent e) {
         DefaultChannelHandlerContext head = getActualUpstreamContext(this.head);
         if (head == null) {
@@ -569,6 +572,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 处理对client响应
+     */
     public void sendDownstream(ChannelEvent e) {
         DefaultChannelHandlerContext tail = getActualDownstreamContext(this.tail);
         if (tail == null) {
@@ -707,10 +713,18 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 使用双向链表来保存 ChannelHandler 调用链
+     *
+     * 在具体的ChannelHandler中，通过ctx.sendDownstream(ChannelEvent e)来实现调用链的串联
+     *
+     */
     private final class DefaultChannelHandlerContext implements ChannelHandlerContext {
+        //前置和后置ChannelHanlder
         volatile DefaultChannelHandlerContext next;
         volatile DefaultChannelHandlerContext prev;
         private final String name;
+        //主要的业务处理逻辑
         private final ChannelHandler handler;
         private final boolean canHandleUpstream;
         private final boolean canHandleDownstream;
@@ -726,6 +740,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             if (handler == null) {
                 throw new NullPointerException("handler");
             }
+            //判断是输入流和输出流
             canHandleUpstream = handler instanceof ChannelUpstreamHandler;
             canHandleDownstream = handler instanceof ChannelDownstreamHandler;
 
@@ -774,6 +789,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             this.attachment = attachment;
         }
 
+        /**
+         * 输出流
+         */
         public void sendDownstream(ChannelEvent e) {
             DefaultChannelHandlerContext prev = getActualDownstreamContext(this.prev);
             if (prev == null) {
@@ -787,6 +805,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             }
         }
 
+        /**
+         * 输入流
+         */
         public void sendUpstream(ChannelEvent e) {
             DefaultChannelHandlerContext next = getActualUpstreamContext(this.next);
             if (next != null) {

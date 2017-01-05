@@ -87,6 +87,10 @@ import org.jboss.netty.util.CharsetUtil;
  *     }
  * }
  * </pre>
+ *
+ * 拓展Set，用来表示一组打开的Channel，
+ * 如果已经添加到ChannelGroup的Channel关闭，则会自动从ChannelGroup中移除
+ * 
  * @apiviz.landmark
  * @apiviz.has org.jboss.netty.channel.group.ChannelGroupFuture oneway - - returns
  */

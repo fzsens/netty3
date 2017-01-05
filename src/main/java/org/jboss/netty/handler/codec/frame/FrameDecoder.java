@@ -420,8 +420,10 @@ public abstract class FrameDecoder extends SimpleChannelUpstreamHandler implemen
             ChannelHandlerContext context, Channel channel,
             ChannelBuffer cumulation, SocketAddress remoteAddress) throws Exception {
 
+        //FrameDecoder will keep calling the decoder method until it returns null.
         while (cumulation.readable()) {
             int oldReaderIndex = cumulation.readerIndex();
+            //循环调用decode直到返回的值为空
             Object frame = decode(context, channel, cumulation);
             if (frame == null) {
                 if (oldReaderIndex == cumulation.readerIndex()) {

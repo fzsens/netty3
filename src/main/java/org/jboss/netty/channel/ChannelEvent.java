@@ -184,6 +184,8 @@ import java.net.SocketAddress;
  * documentation to find out how an event flows in a pipeline and how to handle
  * the event in your application.
  *
+ * Channel的事件
+ *
  * @apiviz.landmark
  * @apiviz.composedOf org.jboss.netty.channel.ChannelFuture
  */

@@ -176,6 +176,7 @@ public class SimpleChannelHandler implements ChannelUpstreamHandler, ChannelDown
     /**
      * Invoked when a {@link Channel} is open, bound to a local address, and
      * connected to a remote address.
+     * 链接建立
      */
     public void channelConnected(
             ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {

@@ -22,12 +22,14 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 
 /**
  * The result of an asynchronous {@link Channel} I/O operation.
+ * 表示一个异步操作的结果
  * <p>
  * All I/O operations in Netty are asynchronous.  It means any I/O calls will
  * return immediately with no guarantee that the requested I/O operation has
  * been completed at the end of the call.  Instead, you will be returned with
  * a {@link ChannelFuture} instance which gives you the information about the
  * result or status of the I/O operation.
+ * IO操作在Netty中是异步完成的，无法保证提交的IO请求会立刻返回，此类用于表示异步IO操作的结果和状态
  * <p>
  * A {@link ChannelFuture} is either <em>uncompleted</em> or <em>completed</em>.
  * When an I/O operation begins, a new future object is created.  The new future
@@ -56,10 +58,14 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
  *                                      +---------------------------+
  * </pre>
  *
+ * ChannelFuture不同的状态
+ *
  * Various methods are provided to let you check if the I/O operation has been
  * completed, wait for the completion, and retrieve the result of the I/O
  * operation. It also allows you to add {@link ChannelFutureListener}s so you
  * can get notified when the I/O operation is completed.
+ *
+ * 可以通过不同的ChannelFuture状态监控执行的状态，或者通过注册监听器进行异步的回调
  *
  * <h3>Prefer {@link #addListener(ChannelFutureListener)} to {@link #await()}</h3>
  *

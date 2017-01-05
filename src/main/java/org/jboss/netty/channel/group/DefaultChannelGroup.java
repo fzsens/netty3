@@ -43,6 +43,8 @@ public class DefaultChannelGroup extends AbstractSet<Channel> implements Channel
     private final String name;
     private final ConcurrentMap<Integer, Channel> serverChannels = new ConcurrentHashMap<Integer, Channel>();
     private final ConcurrentMap<Integer, Channel> nonServerChannels = new ConcurrentHashMap<Integer, Channel>();
+
+    //用于监听Channel移除，以便在ChannelGroup中移除对应的Channel
     private final ChannelFutureListener remover = new ChannelFutureListener() {
         public void operationComplete(ChannelFuture future) throws Exception {
             remove(future.getChannel());
