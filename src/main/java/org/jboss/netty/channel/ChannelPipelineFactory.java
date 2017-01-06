@@ -32,6 +32,8 @@ import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
  * creates a new channel, it uses the {@link Bootstrap#getPipelineFactory() "pipelineFactory"}
  * property to create a new {@link ChannelPipeline} for each new channel.
  *
+ * 用于统一添加Handler的Pipeline，可以在ServerBootstrap中添加
+ *
  * @apiviz.has org.jboss.netty.channel.ChannelPipeline oneway - - creates
  */
 public interface ChannelPipelineFactory {

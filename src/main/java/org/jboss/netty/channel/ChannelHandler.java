@@ -26,8 +26,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 默认情况下每一个客户端发起连接，都会重新创建一个pipeline，而pipeline中会初始化不同的Handler(同一个Handler不被多次添加到Pipeline中)，因此对每一个Connection而言
+ * handler的实例都是不一样的。
+ * 通过在Handler上添加 {@link Sharable} 可以改变这个行为，这样Handler可以多次添加到pipeline中共享
+ *
  * Handles or intercepts a {@link ChannelEvent}, and sends a
  * {@link ChannelEvent} to the next handler in a {@link ChannelPipeline}.
+ *
+ * ChannelHandler处理ChannelEvent，并发送一个ChannelEvent给在ChannelPipeline中的下一个Handler
  *
  * <h3>Sub-types</h3>
  * <p>
@@ -40,9 +46,16 @@ import java.lang.annotation.Target;
  * <li>{@link ChannelDownstreamHandler} handles and intercepts a downstream {@link ChannelEvent}.</li>
  * </ul>
  *
+ * ChannelHandler的具体行为需要在具体的接口中进行定义，
+ * 例如和Socket中的InputStream和OutPutStream一样，也区分读取和写入两个方向，这个在Netty4中做了调整
+ *
  * You will also find more detailed explanation from the documentation of
  * each sub-interface on how an event is interpreted when it goes upstream and
  * downstream respectively.
+ *
+ * 具体的接口中，对ChannelEvent事件的处理方式会有区别
+ *
+ * 例如在输入和输入两种模式下，事件会有不同的解释，主要是对消息的读写事件不同，即 downstream event  或者是 upstream event
  *
  * <h3>The context object</h3>
  * <p>
@@ -53,11 +66,19 @@ import java.lang.annotation.Target;
  * downstream, modify the pipeline dynamically, or store the information
  * (attachment) which is specific to the handler.
  *
+ * 一般情况这个ChannelHandlerContext 是 {@link DefaultChannelPipeline.DefaultChannelHandlerContext} ,
+ * 在其中定义了整个Netty事件流串联的过程，包括filter/intercepting模式的实现
+ * 也可以通过ctx来动态改变Pipeline增加一些Handler或者做其他的一些处理，更多的功能和实现可以研究 DefaultChannelHandlerContext
+ *
  * <h3>State management</h3>
+ *
+ * Channel的状态管理
  *
  * A {@link ChannelHandler} often needs to store some stateful information.
  * The simplest and recommended approach is to use member variables:
  * <pre>
+ *     推荐使用成员变量
+ *
  * public class DataServerHandler extends {@link SimpleChannelHandler} {
  *
  *     <b>private boolean loggedIn;</b>
@@ -84,6 +105,9 @@ import java.lang.annotation.Target;
  * one connection, you have to create a new handler instance for each new
  * channel to avoid a race condition where a unauthenticated client can get
  * the confidential information:
+ *
+ * 在这边必须要做到每一个连接对应到一个Handler实例，不能在多个Connection中共享Handler
+ *
  * <pre>
  * // Create a new handler instance per channel.
  * // See {@link Bootstrap#setPipelineFactory(ChannelPipelineFactory)}.
@@ -95,6 +119,7 @@ import java.lang.annotation.Target;
  * </pre>
  *
  * <h4>Using an attachment</h4>
+ * 使用附件的形式，
  *
  * Although it's recommended to use member variables to store the state of a
  * handler, for some reason you might not want to create many handler instances.

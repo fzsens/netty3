@@ -100,6 +100,10 @@ import org.jboss.netty.channel.socket.nio.NioSocketChannelConfig;
  * to determine when to set or clear the {@link #OP_WRITE} flag.
  * </p>
  *
+ * 使用Channel抽象了多种类型的网络交互包括NIO/OIO/AIO等
+ *
+ * 通过不同的ChannelFactory的实现，可以快速在不同的协议中切换
+ *
  * @apiviz.landmark
  * @apiviz.composedOf org.jboss.netty.channel.ChannelConfig
  * @apiviz.composedOf org.jboss.netty.channel.ChannelPipeline

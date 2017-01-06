@@ -288,6 +288,7 @@ public class SimpleChannelHandler implements ChannelUpstreamHandler, ChannelDown
 
     /**
      * Invoked when {@link Channel#write(Object)} is called.
+     * 在Handler调用Channel.write就会调用writeRequested方法，从而可以进入正轨调用连条
      */
     public void writeRequested(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         ctx.sendDownstream(e);

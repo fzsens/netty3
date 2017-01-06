@@ -184,7 +184,9 @@ import java.net.SocketAddress;
  * documentation to find out how an event flows in a pipeline and how to handle
  * the event in your application.
  *
- * Channel的事件
+ * Channel的事件，Netty以Channel作为通信核心，
+ * Channel的各个阶段都会触发对应的ChannelEvent
+ *
  *
  * @apiviz.landmark
  * @apiviz.composedOf org.jboss.netty.channel.ChannelFuture
