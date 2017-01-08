@@ -162,6 +162,7 @@ import java.lang.annotation.Target;
  *
  * <h4>Using a {@link ChannelLocal}</h4>
  *
+ * 使用Channel作用域的变量
  * If you have a state variable which needs to be accessed either from other
  * handlers or outside handlers, you can use {@link ChannelLocal}:
  * <pre>
