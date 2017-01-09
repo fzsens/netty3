@@ -34,10 +34,14 @@ import org.jboss.netty.util.ExternalResourceReleasable;
  * was introduced with NIO to serve many number of concurrent connections
  * efficiently.
  *
+ * ServerSocketChannelFactory 用于创建服务端的ServerSocketChannel
+ *
  * <h3>How threads work</h3>
  * <p>
  * There are two types of threads in a {@link NioServerSocketChannelFactory};
  * one is boss thread and the other is worker thread.
+ *
+ * 线程分成两种类型，boss和worker
  *
  * <h4>Boss threads</h4>
  * <p>

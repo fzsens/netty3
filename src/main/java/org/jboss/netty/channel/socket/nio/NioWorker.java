@@ -33,6 +33,9 @@ import java.util.concurrent.Executor;
 
 import static org.jboss.netty.channel.Channels.*;
 
+/**
+ * NIO的Worker，在这边触发messageReceived这个读事件
+ */
 public class NioWorker extends AbstractNioWorker {
 
     private final SocketReceiveBufferAllocator recvBufferPool = new SocketReceiveBufferAllocator();
@@ -84,7 +87,7 @@ public class NioWorker extends AbstractNioWorker {
             // Update the predictor.
             predictor.previousReceiveBufferSize(readBytes);
 
-            // Fire the event.
+            // Fire the event. 触发messageReceived方法
             fireMessageReceived(channel, buffer);
         }
 

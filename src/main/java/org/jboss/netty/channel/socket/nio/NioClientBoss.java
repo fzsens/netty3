@@ -69,11 +69,17 @@ public final class NioClientBoss extends AbstractNioSelector implements Boss {
         return new ThreadRenamingRunnable(this, "New I/O boss #" + id, determiner);
     }
 
+    /**
+     * 模板方法，通过父类进行调用
+     */
     @Override
     protected Runnable createRegisterTask(Channel channel, ChannelFuture future) {
         return new RegisterTask(this, (NioClientSocketChannel) channel);
     }
 
+    /**
+     * 客户端的处理，连接到服务端
+     */
     @Override
     protected void process(Selector selector) {
         processSelectedKeys(selector.selectedKeys());
@@ -105,6 +111,7 @@ public final class NioClientBoss extends AbstractNioSelector implements Boss {
                     connect(k);
                 }
             } catch (Throwable t) {
+                //附件为注册的NioClientSocketChannel
                 NioClientSocketChannel ch = (NioClientSocketChannel) k.attachment();
                 ch.connectFuture.setFailure(t);
                 fireExceptionCaught(ch, t);
@@ -146,6 +153,7 @@ public final class NioClientBoss extends AbstractNioSelector implements Boss {
         }
     }
 
+    //连接
     private static void connect(SelectionKey k) throws IOException {
         NioClientSocketChannel ch = (NioClientSocketChannel) k.attachment();
         try {
@@ -154,6 +162,7 @@ public final class NioClientBoss extends AbstractNioSelector implements Boss {
                 if (ch.timoutTimer != null) {
                     ch.timoutTimer.cancel();
                 }
+                //执行注册
                 ch.worker.register(ch, ch.connectFuture);
             }
         } catch (ConnectException e) {
