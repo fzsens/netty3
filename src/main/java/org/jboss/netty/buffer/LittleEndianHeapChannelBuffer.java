@@ -22,6 +22,8 @@ import java.nio.ByteOrder;
  * A little-endian Java heap buffer.  It is recommended to use {@link ChannelBuffers#buffer(ByteOrder, int)}
  * and {@link ChannelBuffers#wrappedBuffer(ByteOrder, byte[])} instead of
  * calling the constructor explicitly.
+ *
+ * 小端在前 5 => 1 0 1 0
  */
 public class LittleEndianHeapChannelBuffer extends HeapChannelBuffer {
 

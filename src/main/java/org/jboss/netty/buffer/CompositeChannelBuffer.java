@@ -32,12 +32,19 @@ import java.util.List;
  * A virtual buffer which shows multiple buffers as a single merged buffer.  It
  * is recommended to use {@link ChannelBuffers#wrappedBuffer(ChannelBuffer...)}
  * instead of calling the constructor explicitly.
+ *
+ * 使用虚拟Buffer来实现zero copy
+ *
+ * 所有的ChannelBuffer都被保存在一个数组中，通过CompositeChannelBuffer的内部处理，把这些Buffer[s]当作一个整体来看待
  */
 public class CompositeChannelBuffer extends AbstractChannelBuffer {
 
     private final ByteOrder order;
+    //使用数组保存所有内部的ChannelBuffer
     private ChannelBuffer[] components;
+    //记录在整个CompositeChannelBuffer中，每个components的起始位置（offset）
     private int[] indices;
+    //缓存最后一个读取的componentId
     private int lastAccessedComponentId;
     private final boolean gathering;
 
@@ -179,7 +186,9 @@ public class CompositeChannelBuffer extends AbstractChannelBuffer {
     }
 
     public byte getByte(int index) {
+        //获取component下标
         int componentId = componentId(index);
+        //index-indices[componentId]找到对应的下标在components中的起始位置
         return components[componentId].getByte(index - indices[componentId]);
     }
 
@@ -683,6 +692,7 @@ public class CompositeChannelBuffer extends AbstractChannelBuffer {
         return buffers.toArray(new ByteBuffer[buffers.size()]);
     }
 
+    //搜索componentId，使用的是顺序搜索，基于Buffer的顺序读写特性
     private int componentId(int index) {
         int lastComponentId = lastAccessedComponentId;
         if (index >= indices[lastComponentId]) {

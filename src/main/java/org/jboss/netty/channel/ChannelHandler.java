@@ -30,6 +30,8 @@ import java.lang.annotation.Target;
  * handler的实例都是不一样的。
  * 通过在Handler上添加 {@link Sharable} 可以改变这个行为，这样Handler可以多次添加到pipeline中共享
  *
+ * ChannelHandler是事件处理的核心接口，所处理的内容，除了业务逻辑也包括通信底层的的链接创建，解码等操作
+ *
  * Handles or intercepts a {@link ChannelEvent}, and sends a
  * {@link ChannelEvent} to the next handler in a {@link ChannelPipeline}.
  *
@@ -210,6 +212,9 @@ import java.lang.annotation.Target;
  * <p>
  * In the examples above which used an attachment or a {@link ChannelLocal},
  * you might have noticed the {@code @Sharable} annotation.
+ *
+ * 使用附件和ChannelLocal的方式，需要注意@Shareable的使用
+ *
  * <p>
  * If a {@link ChannelHandler} is annotated with the {@code @Sharable}
  * annotation, it means you can create an instance of the handler just once and

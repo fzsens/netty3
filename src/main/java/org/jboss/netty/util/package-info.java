@@ -17,6 +17,8 @@
 /**
  * Utility classes used across multiple packages.
  *
+ * 工具类
+ *
  * @apiviz.exclude
  * @apiviz.exclude ^java\.(lang|util)\.
  * @apiviz.exclude \.netty\.(?!util)[a-z0-9]+\.

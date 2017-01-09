@@ -174,6 +174,9 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
         return new RegisterTask((NioServerSocketChannel) channel, future, null);
     }
 
+    /**
+     * 通过任务的方式，绑定Selector的端口和关注的事件
+     */
     private final class RegisterTask implements Runnable {
         private final NioServerSocketChannel channel;
         private final ChannelFuture future;
@@ -190,6 +193,7 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
             boolean bound = false;
             boolean registered = false;
             try {
+                //绑定端口
                 channel.socket.socket().bind(localAddress, channel.getConfig().getBacklog());
                 bound = true;
 

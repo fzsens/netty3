@@ -23,6 +23,9 @@ package org.jboss.netty.channel;
  * implemented by a transport provider.  Most users will not see this type
  * in their code.
  *
+ * downstream在downstream的最后出现，
+ * 处于末尾的万能Handler，在这里会做一些建立连接、绑定端口等重要操作。
+ *
  * @apiviz.uses org.jboss.netty.channel.ChannelPipeline - - sends events upstream
  */
 public interface ChannelSink {
@@ -30,6 +33,8 @@ public interface ChannelSink {
     /**
      * Invoked by {@link ChannelPipeline} when a downstream {@link ChannelEvent}
      * has reached its terminal (the head of the pipeline).
+     *
+     * 到达最后的Handler处理
      */
     void eventSunk(ChannelPipeline pipeline, ChannelEvent e) throws Exception;
 

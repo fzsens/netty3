@@ -35,12 +35,21 @@ import org.jboss.netty.handler.ssl.SslHandler;
  * Filter</a> pattern to give a user full control over how an event is handled
  * and how the {@link ChannelHandler}s in the pipeline interact with each other.
  *
+ * ChannelHandler的集合，Netty基于事件触发，每一个操作会产生一个ChannelEvent，例如发送消息的MessageEvent，状态改变的ChannelStateEvent
+ * 这些事件会被ChannelPipeline接收，并从注册到其中的ChannelHandler[s]中选择一个进行处理，处理的ChannelHandler又会出发新的事件，并进行
+ * 传递。
+ *
+ * ChannelPipeline提供了ChannelHandler的编程模型，并通过Channel和ChannelPipeline，
+ * 屏蔽了NIO和OIO之间的差异，通过简化了在两者之间迁移的成本
+ *
  * <h3>Creation of a pipeline</h3>
  *
  * For each new channel, a new pipeline must be created and attached to the
  * channel.  Once attached, the coupling between the channel and the pipeline
  * is permanent; the channel cannot attach another pipeline to it nor detach
  * the current pipeline from it.
+ * Channel和pipeline的绑定关系是一次性，并不可逆的
+ *
  * <p>
  * The recommended way to create a new pipeline is to use the helper methods in
  * {@link Channels} rather than calling an individual implementation's
@@ -49,6 +58,8 @@ import org.jboss.netty.handler.ssl.SslHandler;
  * import static org.jboss.netty.channel.{@link Channels}.*;
  * {@link ChannelPipeline} pipeline = pipeline(); // same with Channels.pipeline()
  * </pre>
+ *
+ * 创建pipeline的方式是使用Channels辅助类
  *
  * <h3>How an event flows in a pipeline</h3>
  *
@@ -61,6 +72,12 @@ import org.jboss.netty.handler.ssl.SslHandler;
  * of the event is interpreted somewhat differently depending on whether it is
  * going upstream or going downstream. Please refer to {@link ChannelEvent} for
  * more information.
+ *
+ * Netty的ChannelPipeline包含两条线路，Upstream和Downstream，Upstream对应上行，接收到的消息，被动的状态修改属于Upstream
+ * Downstream属于下行，发送消息，主动的状态修改属于Downstream
+ *
+ * sendUpstream() 和 sendDownstream() 分别对应这两个方向
+ *
  * <pre>
  *                                       I/O Request
  *                                     via {@link Channel} or
@@ -92,6 +109,11 @@ import org.jboss.netty.handler.ssl.SslHandler;
  *  |  | Upstream Handler  1  |  | Downstream Handler  M  |  |
  *  |  +----------+-----------+  +-----------+------------+  |
  *  |            /|\                         |               |
+ *  |             |                         \|/              |
+ *  |             |                          |               |
+ *  |             |                 +--------+--------+      |
+ *  |             |                 |   ChannelSink   |      |
+ *  |             |                 +-----------------+      |
  *  +-------------+--------------------------+---------------+
  *                |                         \|/
  *  +-------------+--------------------------+---------------+
@@ -108,6 +130,8 @@ import org.jboss.netty.handler.ssl.SslHandler;
  * actual input operation such as {@link InputStream#read(byte[])}.
  * If an upstream event goes beyond the top upstream handler, it is discarded
  * silently.
+ * upstream事件（读事件）处理从IO线程中读取到的数据，一般这些数据都是远端生成，使用InputStream的read方法
+ * 如果upstream事件走到最后，则默认丢弃
  * <p>
  * A downstream event is handled by the downstream handler in the top-down
  * direction as shown on the right side of the diagram.  A downstream handler
@@ -115,6 +139,10 @@ import org.jboss.netty.handler.ssl.SslHandler;
  * If a downstream event goes beyond the bottom downstream handler, it is
  * handled by an I/O thread associated with the {@link Channel}. The I/O thread
  * often performs the actual output operation such as {@link OutputStream#write(byte[])}.
+ *
+ * downstream事件的方向则刚好相反，一般从Handler中生成数据，最终通过Socket.write写入到通信网络中
+ *
+ * 在实际上，并不是每一个Handler都会被执行，而是需要在Handler中使用sendUp(Down)stream(ChannelEvent e);才能形成调用链
  * <p>
  * For example, let us assume that we created the following pipeline:
  * <pre>
@@ -144,6 +172,12 @@ import org.jboss.netty.handler.ssl.SslHandler;
  *     evaluation order of an upstream and a downstream event could be 125 and
  *     543 respectively.</li>
  * </ul>
+ *
+ * SimpleChannelHandler包含up和down两种模式
+ *
+ * 这种模式会导致很多ChannelEvent被创建，从而加大GC的压力，
+ * 因此在Netty v4种做了较大的调整，将事件创建调整为方法调用。
+ * https://blog.twitter.com/2013/netty-4-at-twitter-reduced-gc-overhead
  *
  * <h3>Building a pipeline</h3>
  * <p>
@@ -179,6 +213,8 @@ import org.jboss.netty.handler.ssl.SslHandler;
  * {@link ChannelPipeline} is thread safe.  For example, you can insert a
  * {@link SslHandler} when sensitive information is about to be exchanged,
  * and remove it after the exchange.
+ *
+ * pipeline可以动态地增加和修改ChannelHandler
  *
  * <h3>Pitfall</h3>
  * <p>

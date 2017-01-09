@@ -18,6 +18,8 @@
  * IoC/DI friendly helper classes which enable an easy implementation of
  * typical client side and server side channel initialization.
  *
+ * 配置并启动服务的类
+ *
  * @apiviz.landmark
  * @apiviz.exclude ^org\.jboss\.netty\.util\.
  */

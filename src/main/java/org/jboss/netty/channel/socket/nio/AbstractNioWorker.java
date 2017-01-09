@@ -90,6 +90,9 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
         sendBufferPool.releaseExternalResources();
     }
 
+    /**
+     * 处理Selector
+     */
     @Override
     protected void process(Selector selector) throws IOException {
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -101,6 +104,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
         }
         for (Iterator<SelectionKey> i = selectedKeys.iterator(); i.hasNext();) {
             SelectionKey k = i.next();
+            //remove
             i.remove();
             try {
                 int readyOps = k.readyOps();

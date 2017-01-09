@@ -27,11 +27,20 @@ import java.util.NoSuchElementException;
 
 /**
  * A skeletal implementation of a buffer.
+ *
+ * 包含了Buffer读写的核心代码
+ *
  */
 public abstract class AbstractChannelBuffer implements ChannelBuffer {
 
+    //当前读的下标
     private int readerIndex;
+    //当前写的下标
     private int writerIndex;
+
+    /**
+     * 标记读写下标，用于进行reset等操作
+     */
     private int markedReaderIndex;
     private int markedWriterIndex;
 
@@ -39,6 +48,9 @@ public abstract class AbstractChannelBuffer implements ChannelBuffer {
         return readerIndex;
     }
 
+    /**
+     * writerIndex 总是要大于 readerIndex
+     */
     public void readerIndex(int readerIndex) {
         if (readerIndex < 0 || readerIndex > writerIndex) {
             throw new IndexOutOfBoundsException();
@@ -79,6 +91,9 @@ public abstract class AbstractChannelBuffer implements ChannelBuffer {
         return writableBytes() > 0;
     }
 
+    /**
+     * 可读的字节
+     */
     public int readableBytes() {
         return writerIndex - readerIndex;
     }

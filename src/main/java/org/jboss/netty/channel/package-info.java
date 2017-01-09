@@ -19,6 +19,7 @@
  * various transports such as a
  * <a href="http://en.wikipedia.org/wiki/New_I/O#Channels">NIO Channel</a>.
  *
+ * 核心的Channel API，处理各种通讯协议Channel
  * @apiviz.landmark
  * @apiviz.exclude ^java
  * @apiviz.exclude ^org\.jboss\.netty\.channel\.[^\.]+\.

@@ -24,6 +24,8 @@ import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 
 /**
+ * 并不是单纯对NIO的ByteBuffer的封装
+ *
  * A skeletal implementation for Java heap buffers.
  */
 public abstract class HeapChannelBuffer extends AbstractChannelBuffer {

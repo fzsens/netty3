@@ -169,6 +169,10 @@ public final class NioClientBoss extends AbstractNioSelector implements Boss {
         ch.worker.close(ch, succeededFuture(ch));
     }
 
+    /**
+     * 通过任务的方式，绑定Selector的端口和关注的事件
+     */
+
     private final class RegisterTask implements Runnable {
         private final NioClientBoss boss;
         private final NioClientSocketChannel channel;
@@ -187,6 +191,7 @@ public final class NioClientBoss extends AbstractNioSelector implements Boss {
                 }
             }
             try {
+                //绑定
                 channel.channel.register(
                         boss.selector, SelectionKey.OP_CONNECT, channel);
             } catch (ClosedChannelException e) {

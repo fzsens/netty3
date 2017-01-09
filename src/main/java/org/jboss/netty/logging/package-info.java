@@ -18,6 +18,8 @@
  * Simplistic <em>internal-use-only</em> logging layer which allows a user to
  * decide what logging framework Netty should use.
  *
+ * 内部使用的日志类
+ *
  * @apiviz.hidden
  */
 package org.jboss.netty.logging;

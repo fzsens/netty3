@@ -31,7 +31,8 @@ import java.util.concurrent.RejectedExecutionException;
  * to use {@link Channels#pipeline()} to create a new {@link ChannelPipeline}
  * instance rather than calling the constructor directly.
  *
- * filter/intercepting 模式
+ * filter/intercepting 模式，来实现ChannelHandler的调用流程
+ *
  */
 public class DefaultChannelPipeline implements ChannelPipeline {
 
@@ -40,8 +41,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     private volatile Channel channel;
     private volatile ChannelSink sink;
+    //双向链表
     private volatile DefaultChannelHandlerContext head;
     private volatile DefaultChannelHandlerContext tail;
+    //名称索引
     private final Map<String, DefaultChannelHandlerContext> name2ctx =
         new HashMap<String, DefaultChannelHandlerContext>(4);
 
@@ -566,6 +569,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     void sendUpstream(DefaultChannelHandlerContext ctx, ChannelEvent e) {
         try {
+            //最终调用ChannelHandler的handleUpstream进行处理
             ((ChannelUpstreamHandler) ctx.getHandler()).handleUpstream(ctx, e);
         } catch (Throwable t) {
             notifyHandlerException(e, t);
@@ -608,6 +612,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 获取 ChannelHandlerContext
+     */
     private DefaultChannelHandlerContext getActualUpstreamContext(DefaultChannelHandlerContext ctx) {
         if (ctx == null) {
             return null;
@@ -795,6 +802,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         public void sendDownstream(ChannelEvent e) {
             DefaultChannelHandlerContext prev = getActualDownstreamContext(this.prev);
             if (prev == null) {
+                //如果没有前置节点了，就调用sink操作
                 try {
                     getSink().eventSunk(DefaultChannelPipeline.this, e);
                 } catch (Throwable t) {
@@ -811,6 +819,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         public void sendUpstream(ChannelEvent e) {
             DefaultChannelHandlerContext next = getActualUpstreamContext(this.next);
             if (next != null) {
+                //显示调用后，指针后移，进行下一个Handler的处理
                 DefaultChannelPipeline.this.sendUpstream(next, e);
             }
         }

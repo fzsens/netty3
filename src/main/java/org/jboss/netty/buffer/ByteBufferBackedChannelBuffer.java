@@ -28,9 +28,12 @@ import java.nio.channels.ScatteringByteChannel;
  * A NIO {@link ByteBuffer} based buffer.  It is recommended to use {@link ChannelBuffers#directBuffer(int)}
  * and {@link ChannelBuffers#wrappedBuffer(ByteBuffer)} instead of calling the
  * constructor explicitly.
+ *
+ * 基于NIO的ByteBuffer实现
  */
 public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
 
+    //delegate
     private final ByteBuffer buffer;
     private final ByteOrder order;
     private final int capacity;
@@ -189,6 +192,9 @@ public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
         data.put(src, srcIndex, length);
     }
 
+    /**
+     * 通过ByteBuffer提供的API实现设置ByteBuffer，先拷贝后复制
+     */
     public void setBytes(int index, ByteBuffer src) {
         ByteBuffer data = buffer.duplicate();
         data.limit(index + src.remaining()).position(index);

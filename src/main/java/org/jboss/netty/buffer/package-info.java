@@ -127,6 +127,10 @@
  * implementation is used only for sliced or composite buffers, and it performs
  * as well as {@link java.nio.ByteBuffer}.
  *
+ * 缓冲相关的类，对NIO Buffer做了封装
+ * http://qiongsong.com/netty/2017/01/05/netty-bytebuf/
+ *
+ *
  * @apiviz.landmark
  * @apiviz.exclude ^java\.lang\.
  * @apiviz.exclude ^java\.io\.[^\.]+Stream$

@@ -30,6 +30,8 @@ import java.util.List;
 
 
 /**
+ * 辅助处理ChannelBuffer
+ *
  * Creates a new {@link ChannelBuffer} by allocating new space or by wrapping
  * or copying existing byte arrays, byte buffers and a string.
  *
@@ -47,6 +49,8 @@ import java.util.List;
  * </pre>
  *
  * <h3>Allocating a new buffer</h3>
+ *
+ * 分配和复制拷贝
  *
  * Three buffer types are provided out of the box.
  *
@@ -68,6 +72,8 @@ import java.util.List;
  * you want to create a buffer which is composed of more than one array to
  * reduce the number of memory copy.
  *
+ * 包装buffer，original和wrapped的Buffer之间共享数据
+ *
  * <h3>Creating a copied buffer</h3>
  *
  * Copied buffer is a deep copy of one or more existing byte arrays, byte
@@ -75,6 +81,8 @@ import java.util.List;
  * between the original data and the copied buffer.  Various copy methods are
  * provided and their name is all {@code copiedBuffer()}.  It is also convenient
  * to use this operation to merge multiple buffers into one buffer.
+ *
+ * 深度拷贝，original和copied的Buffer之间不共享数据
  *
  * <h3>Miscellaneous utility methods</h3>
  *

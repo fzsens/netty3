@@ -154,6 +154,7 @@ public final class Channels {
     }
 
     // event emission methods
+    //fireXXX 封装了对DefaultChannelPipeline的处理
 
     /**
      * Sends a {@code "channelOpen"} event to the first

@@ -84,6 +84,9 @@ abstract class AbstractNioSelector implements NioSelector {
      */
     protected final AtomicBoolean wakenUp = new AtomicBoolean();
 
+    /**
+     * 任务队列
+     */
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<Runnable>();
 
     private volatile int cancelledKeys; // should use AtomicInteger but we just need approximation
@@ -126,6 +129,7 @@ abstract class AbstractNioSelector implements NioSelector {
         return Thread.currentThread() == thread;
     }
 
+    //jdk bug
     public void rebuildSelector() {
         if (!isIoThread()) {
             taskQueue.add(new Runnable() {
@@ -191,6 +195,9 @@ abstract class AbstractNioSelector implements NioSelector {
         logger.info("Migrated " + nChannels + " channel(s) to the new Selector,");
     }
 
+    /**
+     * 实现了Reactor的EventLoop
+     */
     public void run() {
         thread = Thread.currentThread();
         startupLatch.countDown();
@@ -204,13 +211,16 @@ abstract class AbstractNioSelector implements NioSelector {
         // use 80% of the timeout for measure
         final long minSelectTimeout = SelectorUtil.SELECT_TIMEOUT_NANOS * 80 / 100;
         boolean wakenupFromLoop = false;
+        //循环
         for (;;) {
             wakenUp.set(false);
 
             try {
                 long beforeSelect = System.nanoTime();
+                //就绪的Channel数目
                 int selected = select(selector);
                 if (selected == 0 && !wakenupFromLoop && !wakenUp.get()) {
+                    //等待分支
                     long timeBlocked = System.nanoTime() - beforeSelect;
                     if (timeBlocked < minSelectTimeout) {
                         boolean notConnected = false;
@@ -249,6 +259,7 @@ abstract class AbstractNioSelector implements NioSelector {
                                 // Returned before the minSelectTimeout elapsed with nothing selected.
                                 // This may be because of a bug in JDK NIO Selector provider, so increment the counter
                                 // which we will use later to see if it's really the bug in JDK.
+                                // 延迟
                                 selectReturnsImmediately ++;
                             }
                         }
@@ -312,6 +323,7 @@ abstract class AbstractNioSelector implements NioSelector {
                 }
 
                 cancelledKeys = 0;
+                //处理内部任务
                 processTaskQueue();
                 selector = this.selector; // processTaskQueue() can call rebuildSelector()
 
@@ -334,6 +346,7 @@ abstract class AbstractNioSelector implements NioSelector {
                     shutdownLatch.countDown();
                     break;
                 } else {
+                    //处理Selector
                     process(selector);
                 }
             } catch (Throwable t) {
@@ -382,6 +395,9 @@ abstract class AbstractNioSelector implements NioSelector {
         assert selector != null && selector.isOpen();
     }
 
+    /**
+     * 处理内部任务
+     */
     private void processTaskQueue() {
         for (;;) {
             final Runnable task = taskQueue.poll();

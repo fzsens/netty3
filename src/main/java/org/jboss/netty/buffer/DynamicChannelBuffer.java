@@ -28,6 +28,7 @@ import java.nio.channels.ScatteringByteChannel;
  * A dynamic capacity buffer which increases its capacity as needed.  It is
  * recommended to use {@link ChannelBuffers#dynamicBuffer(int)} instead of
  * calling the constructor explicitly.
+ * 动态增加的Buffer
  */
 public class DynamicChannelBuffer extends AbstractChannelBuffer {
 
@@ -58,6 +59,10 @@ public class DynamicChannelBuffer extends AbstractChannelBuffer {
         buffer = factory.getBuffer(order(), estimatedLength);
     }
 
+    /**
+     * 自动扩容
+     * @param minWritableBytes 要写入的byte长度
+     */
     @Override
     public void ensureWritableBytes(int minWritableBytes) {
         if (minWritableBytes <= writableBytes()) {
@@ -72,19 +77,24 @@ public class DynamicChannelBuffer extends AbstractChannelBuffer {
         }
         int minNewCapacity = writerIndex() + minWritableBytes;
         while (newCapacity < minNewCapacity) {
+            // X2
             newCapacity <<= 1;
 
             // Check if we exceeded the maximum size of 2gb if this is the case then
             // newCapacity == 0
             //
             // https://github.com/netty/netty/issues/258
+            //int类型无法支持超过2GB的Buffer内存
             if (newCapacity == 0) {
                 throw new IllegalStateException("Maximum size of 2gb exceeded");
             }
         }
 
+        //创建新的Buffer
         ChannelBuffer newBuffer = factory().getBuffer(order(), newCapacity);
+        //拷贝写入
         newBuffer.writeBytes(buffer, 0, writerIndex());
+        //指针偏移
         buffer = newBuffer;
     }
 
