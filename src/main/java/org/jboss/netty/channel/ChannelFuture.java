@@ -80,6 +80,11 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
  * performance and resource utilization because it does not block at all, but
  * it could be tricky to implement a sequential logic if you are not used to
  * event-driven programming.
+ *
+ * addListener是无堵塞的，指定一个ChannelFutureListener给ChannelFuture，当关联的IO操作完成的时候
+ * IO线程会通知Listener。ChannelFutureListener带来性能的提升和资源的有效利用。但是如果你比较习惯串行逻辑
+ * 而不是异步编程，这种方式的习惯会略微有所不同。
+ *
  * <p>
  * By contrast, {@link #await()} is a blocking operation.  Once called, the
  * caller thread blocks until the operation is done.  It is easier to implement
